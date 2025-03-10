@@ -1,0 +1,32 @@
+name: Auto Scraper
+
+on:
+  schedule:
+    - cron: "*/20 * * * *"  # Runs every 20 minutes
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set Up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Scraper
+        run: python scraper.py
+
+      - name: Commit & Push Changes
+        run: |
+          git config --global user.email "your-email@example.com"
+          git config --global user.name "GitHub Actions"
+          git add news_data.csv stock_market_news.csv
+          git commit -m "Auto update news data" || echo "No changes to commit"
+          git push
